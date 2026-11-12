@@ -15,6 +15,7 @@ const sql = mysql2.createPool({
     database: process.env.NOME_BANCO
 })
 
+
 app.get("/", (request, response) => { 
     const comandoSelect = "SELECT * FROM musicas_yagosantos"
 
@@ -27,6 +28,7 @@ app.get("/", (request, response) => {
         response.json(data)
     })
 })
+
 
 app.post("/cadastrar", (request, response) => {
     const { titulo, artista, genero, ano, duracao } = request.body
@@ -43,6 +45,24 @@ app.post("/cadastrar", (request, response) => {
     })
  })
 
+
+ app.put("/editar/:id", (request, response) => {
+    const { id } = request.params
+    const { titulo, artista, genero, ano, duracao } = request.body
+
+    const comandoUpdate = "UPDATE musicas_yagosantos SET titulo = ?, artista = ?, genero = ?, ano = ?, duracao = ? WHERE id = ?"
+
+    sql.query(comandoUpdate, [titulo, artista, genero, ano, duracao, id], (error) => {
+        if (error) {
+            console.log(error)
+            return
+        }
+
+        response.json({ mensagem: "Música alterada com sucesso!" })
+    })
+})
+
+
  app.delete("/apagar/:id", (request, response) => {
     const { id } = request.params
 
@@ -58,9 +78,11 @@ app.post("/cadastrar", (request, response) => {
     })
 })
 
+
 app.listen(3001, () => {
     console.log("Servidor online")
 })
+
 
 export default app
 
